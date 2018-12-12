@@ -16,6 +16,8 @@ public class Main {
             System.out.println("type 3 to add a collaborator");
             System.out.println("type 4 to go to lab orientations");
             System.out.println("type 5 to go to publications");
+            System.out.println("type 6 to see lab academic production report");
+            System.out.println("type 7 to go to project consult");
 
             int option = scan.nextInt();
             scan.nextLine();
@@ -73,7 +75,21 @@ public class Main {
                         See_publications(AllPublications);
                     }
                 }
-            }
+            }//go to publications
+            else if(option == 6){
+                Show_academic_report(CollaboratorsList, ProjectList, PastProjects, AllPublications, AllOrientations);
+            }//go to report
+            else if(option == 7){
+                ArrayList<Project> AllProjects = new ArrayList<>();
+
+                for(int i = 0; i < ProjectList.size(); i++){
+                    AllProjects.add(ProjectList.get(i));
+                }
+                for(int i = 0; i < PastProjects.size(); i++){
+                    AllProjects.add(PastProjects.get(i));
+                }
+                Project_selection(AllProjects);
+            }//project consult
         }
     }
 //--------------------------------- CREATE A PROJECT --------------------------
@@ -403,8 +419,8 @@ public class Main {
         title = scan.nextLine();
         new_publication.setConference_name(title);
         System.out.println("type the year of publication (ex '2018'):");
-        title = scan.nextLine();
-        new_publication.setYear(title);
+        int year = scan.nextInt();
+        new_publication.setYear(year);
         System.out.println("type 1 if this publication is associated with a project from this laboratory");
         System.out.println("type 0 if its not (*note that the project need to be 'ongoing'*)");
         int choice = scan.nextInt();
@@ -453,7 +469,7 @@ public class Main {
             System.out.println("choose a publication to see");
             System.out.println("or type -1 to go back:");
             for (int i = 0; i < AllPublications.size(); i++){
-                System.out.println(i+". "+AllPublications.get(i).getName());
+                System.out.println(i+". "+AllPublications.get(i).getName()+" Year: "+AllPublications.get(i).getYear());
             }
             int option = scan.nextInt();
             scan.nextLine();
@@ -481,7 +497,98 @@ public class Main {
             }
         }
     }
+//----------------------------------------- ACADEMIC REPORT ------------------------
+    public static void Show_academic_report(ArrayList<Collaborator> CollaboratorsList, ArrayList<Project> ProjectList, ArrayList<Project> PastProjects, ArrayList<Publication> AllPublications, ArrayList<Orientations> AllOrientations){
+        Scanner scan = new Scanner(System.in); // creates a object called scan to scan inputs along the code
+
+        System.out.println("-- LABORATORY ACADEMIC PRODUCTIVITY REPORT --");
+        System.out.println("Number of Collaborators: "+CollaboratorsList.size());
+        int elab = 0;
+        for(int i = 0; i < ProjectList.size(); i++){
+            if(ProjectList.get(i).getStatus().equals("On elaboration")){
+                elab++;
+            }
+        }
+        System.out.println("Number of Projects 'On elaboration': "+elab);
+        int ongoing = 0;
+        for (int i = 0; i < ProjectList.size(); i++){
+            if(ProjectList.get(i).getStatus().equals("Ongoing")){
+                ongoing++;
+            }
+        }
+        System.out.println("Number of 'Ongoing' Projects: "+ongoing);
+        System.out.println("Number of 'Complete' Projects: "+PastProjects.size());
+        int total = PastProjects.size() + ProjectList.size();
+        System.out.println("Number of Projects in total: "+total);
+        System.out.println("Number of Orientations: "+AllOrientations.size());
+        System.out.println("Number of Publications: "+AllPublications.size());
+        System.out.println("type any key to continue..");
+        String string = scan.nextLine();
+    }
+//----------------------------------------- PROJECT SELECTION -----------------------
+    public static void Project_selection(ArrayList<Project> AllProjects){
+        Scanner scan = new Scanner(System.in); // creates a object called scan to scan inputs along the code
+
+        System.out.println("choose a project to consult:");
+        for(int i = 0; i < AllProjects.size(); i++){
+            System.out.println(i+". "+AllProjects.get(i).getName());
+        }
+        int option = scan.nextInt();
+        scan.nextLine();
+        Consult_by_project(AllProjects.get(option));
+    }
+//----------------------------------------- PROJECT CONSULT ------------------------
+    public static void Consult_by_project(Project Yourproject){
+
+        System.out.println("Name: "+Yourproject.getName());
+        System.out.println("Status: "+Yourproject.getStatus());
+        System.out.println("Description: "+Yourproject.getDescription());
+        System.out.println("Goal: "+Yourproject.getGoal());
+        System.out.println("Initial date: "+Yourproject.getInitial_date());
+        System.out.println("End date: "+Yourproject.getEnd_date());
+        System.out.println("Financial agency: "+Yourproject.getFinancial_agency());
+        System.out.println("Budget: "+Yourproject.getBudget());
+        System.out.println("Collaborators:");
+        for(int i = 0; i < Yourproject.getCollaboratorsList().size(); i++){
+            System.out.println(Yourproject.getCollaboratorsList().get(i).getName());
+        }
+        //Sort publications out of bounderies
+        Sort_publications(Yourproject.getProjectsPublications());
+
+
+    }
+//--------------------------------------- SORT PUBLICATIONS ------------------------
+    public static void Sort_publications(ArrayList<Publication> PublicationList){
+        ArrayList<Publication> SortedPublications = new ArrayList<>();
+        int GreaterIndex = 0;
+        int year = PublicationList.get(0).getYear();
+        int size = PublicationList.size();
+       while(true){
+
+           for (int i = 0; i < size; i++){
+               if(PublicationList.get(i).getYear() > year){
+                   GreaterIndex = i;
+                   year = PublicationList.get(i).getYear();
+               }
+           }
+           SortedPublications.add(PublicationList.get(GreaterIndex));
+           PublicationList.remove(GreaterIndex);
+           GreaterIndex = 0;
+           if(size != 1){
+               year = PublicationList.get(0).getYear();
+           }
+           size--;
+           if(PublicationList.size() == 0){
+               break;
+           }
+       }
+       PublicationList = SortedPublications;
+
+       See_publications(SortedPublications);
+
+    }
 }
+
 
 
 

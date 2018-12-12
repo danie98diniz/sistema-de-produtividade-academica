@@ -5,7 +5,7 @@ public class Publication {
     private ArrayList<Collaborator> Autors = new ArrayList<>();
     private String name;
     private String conference_name;
-    private String year;
+    private int year;
     private ArrayList<String> publication = new ArrayList<>();
     private int project;
     private Project ProjectAssociated;
@@ -51,11 +51,11 @@ public class Publication {
         this.conference_name = conference_name;
     }
 
-    public String getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 
